@@ -1,0 +1,7 @@
+{
+  "name": "baselineks",
+  "description": "Professional Swap Aggregator and Copy Trading MiniApp for Base.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>BaseFlow Pro</title>
+    
+    <!-- Farcaster MiniApp Metadata -->
+    <meta name="fc:miniapp" content='{
+      "version":"next",
+      "imageUrl":"https://picsum.photos/seed/baseflow_v2/1200/630",
+      "button":{
+          "title":"Launch BaseFlow Pro",
+          "action":{
+            "type":"launch_miniapp",
+            "name":"BaseFlow Pro",
+            "url":"https://baseflow-pro.vercel.app",
+            "splashImageUrl": "https://picsum.photos/seed/baseflow_splash/400/400",
+            "splashBackgroundColor": "#0B0C10"
+          }
+      }
+    }' />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              base: {
+                blue: '#0052FF',
+                dark: '#0B0C10',
+                card: '#1F2937',
+                success: '#00D26A',
+                error: '#F03D3D'
+              }
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.5s ease-out',
+              'slide-up': 'slideUp 0.3s ease-out',
+              'bounce-in': 'bounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+            },
+            keyframes: {
+              fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+              slideUp: { '0%': { transform: 'translateY(20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
+              bounceIn: { '0%': { transform: 'scale(0.8)', opacity: '0' }, '100%': { transform: 'scale(1)', opacity: '1' } }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        background-color: #0B0C10;
+        color: white;
+        -webkit-tap-highlight-color: transparent;
+        font-family: 'Inter', sans-serif;
+        overflow-x: hidden;
+      }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+      .pt-safe { padding-top: env(safe-area-inset-top); }
+      
+      /* OnchainKit Theme Overrides */
+      :root {
+        --ock-font-family: 'Inter', sans-serif;
+        --ock-bg-default: #1F2937;
+        --ock-bg-secondary: #0B0C10;
+        --ock-text-primary: #FFFFFF;
+        --ock-brand-primary: #0052FF;
+      }
+    </style>
+    <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.2.0",
+    "react-dom": "https://esm.sh/react-dom@18.2.0",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "@farcaster/miniapp-sdk": "https://esm.sh/@farcaster/miniapp-sdk@0.2.1",
+    "viem": "https://esm.sh/viem@2.21.0",
+    "viem/chains": "https://esm.sh/viem@2.21.0/chains",
+    "wagmi": "https://esm.sh/wagmi@2.12.0",
+    "@tanstack/react-query": "https://esm.sh/@tanstack/react-query@5.51.1",
+    "@coinbase/onchainkit": "https://esm.sh/@coinbase/onchainkit@1.0.0",
+    "@coinbase/onchainkit/swap": "https://esm.sh/@coinbase/onchainkit@1.0.0/swap",
+    "@coinbase/onchainkit/identity": "https://esm.sh/@coinbase/onchainkit@1.0.0/identity",
+    "@coinbase/onchainkit/token": "https://esm.sh/@coinbase/onchainkit@1.0.0/token",
+    "@coinbase/onchainkit/wallet": "https://esm.sh/@coinbase/onchainkit@1.0.0/wallet",
+    "@coinbase/onchainkit/minikit": "https://esm.sh/@coinbase/onchainkit@1.0.0/minikit",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "@coinbase/onchainkit/": "https://esm.sh/@coinbase/onchainkit@^1.1.2/",
+    "viem/": "https://esm.sh/viem@^2.44.4/"
+  }
+}
+</script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="index.tsx"></script>
+  </body>
+</html>

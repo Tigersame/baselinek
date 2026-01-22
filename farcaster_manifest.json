@@ -1,0 +1,25 @@
+{
+  "accountAssociation": {
+    "header": "Conceptual_Header_Payload",
+    "payload": "Conceptual_Body_Payload",
+    "signature": "Conceptual_Signature"
+  },
+  "miniapp": {
+    "version": "1",
+    "name": "BaseFlow Pro",
+    "subtitle": "Professional DeFi Hub on Base",
+    "description": "Next-level Swap Aggregator, Copy Trading, and Token Launcher. Optimized for the Base app.",
+    "homeUrl": "https://baseflow-pro.vercel.app",
+    "iconUrl": "https://picsum.photos/seed/baseflow_icon/512/512",
+    "splashImageUrl": "https://picsum.photos/seed/baseflow_splash/800/800",
+    "splashBackgroundColor": "#0B0C10",
+    "webhookUrl": "https://baseflow-pro.vercel.app/api/webhook",
+    "primaryCategory": "finance",
+    "tags": ["defi", "swap", "trading", "base", "onchain"],
+    "heroImageUrl": "https://picsum.photos/seed/baseflow_og/1200/630",
+    "tagline": "Professional Grade Base DeFi",
+    "ogTitle": "BaseFlow Pro",
+    "ogDescription": "Trade, Copy, and Launch on Base with zero friction.",
+    "ogImageUrl": "https://picsum.photos/seed/baseflow_og/1200/630"
+  }
+}
