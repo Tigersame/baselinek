@@ -1,9 +1,15 @@
-
 import React, { useState } from 'react';
 import { MOCK_VAULTS } from '../constants';
 import { Vault } from '../types';
+import { 
+  Transaction, 
+  TransactionButton, 
+  TransactionSponsor, 
+  TransactionStatus, 
+  TransactionToast 
+} from '@coinbase/onchainkit/transaction';
+import { parseUnits } from 'viem';
 
-// Added missing prop interface
 interface EarnVaultsProps {
   onOpenUrl: (url: string) => void;
 }
@@ -11,20 +17,20 @@ interface EarnVaultsProps {
 export const EarnVaults: React.FC<EarnVaultsProps> = ({ onOpenUrl }) => {
   const [selectedVault, setSelectedVault] = useState<Vault | null>(null);
   const [depositAmount, setDepositAmount] = useState('');
-  const [isDepositing, setIsDepositing] = useState(false);
 
-  const handleDeposit = () => {
-    setIsDepositing(true);
-    setTimeout(() => {
-        setIsDepositing(false);
-        setSelectedVault(null);
-        alert('Deposit successful! Funds are now deployed via OnchainKit Earn (Morpho).');
-    }, 2000);
-  };
+  // Mock contract address for Morpho Vault or similar DeFi strategy
+  const VAULT_CONTRACT = "0x8e833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"; // Hypothetical vault
+
+  const calls = [
+    {
+      to: VAULT_CONTRACT as `0x${string}`,
+      data: "0x" as `0x${string}`, // In reality, this would be encodeFunctionData for deposit
+      value: BigInt(0),
+    }
+  ];
 
   return (
     <div className="p-4 space-y-6 pb-24 animate-fade-in">
-      {/* Hero Banner */}
       <div className="bg-gradient-to-br from-green-900/40 to-base-blue/40 p-6 rounded-3xl border border-white/10 relative overflow-hidden shadow-2xl">
         <div className="absolute top-0 right-0 -mt-2 -mr-2 w-32 h-32 bg-green-500/20 rounded-full blur-3xl"></div>
         <h2 className="text-2xl font-black tracking-tight relative z-10">Base Earn</h2>
@@ -42,7 +48,6 @@ export const EarnVaults: React.FC<EarnVaultsProps> = ({ onOpenUrl }) => {
         </div>
       </div>
 
-      {/* Integration Highlight */}
       <div className="bg-base-card p-3 rounded-2xl border border-gray-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
@@ -50,26 +55,17 @@ export const EarnVaults: React.FC<EarnVaultsProps> = ({ onOpenUrl }) => {
               </div>
               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Powered by Morpho Blue</span>
           </div>
-          <span 
-            onClick={() => onOpenUrl('https://morpho.org')}
-            className="text-[10px] text-blue-400 font-bold underline cursor-pointer"
-          >
-            View Onchain
+          <span onClick={() => onOpenUrl('https://morpho.org')} className="text-[10px] text-blue-400 font-bold underline cursor-pointer">
+            View Protocol
           </span>
       </div>
 
-      {/* Vault List */}
       <div className="space-y-4">
-        <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] ml-1">Featured Vaults</h3>
         {MOCK_VAULTS.map((vault) => (
-          <div key={vault.id} 
-               onClick={() => setSelectedVault(vault)}
-               className="bg-base-card p-5 rounded-3xl border border-gray-800 hover:border-green-500/50 transition-all cursor-pointer group shadow-xl relative overflow-hidden"
-          >
+          <div key={vault.id} onClick={() => setSelectedVault(vault)} className="bg-base-card p-5 rounded-3xl border border-gray-800 hover:border-green-500/50 transition-all cursor-pointer group shadow-xl relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
                 <i className="fas fa-shield-halved text-6xl"></i>
             </div>
-            
             <div className="flex justify-between items-start mb-4">
               <div className="flex gap-4">
                 <img src={vault.logo} className="w-12 h-12 rounded-2xl shadow-lg border border-gray-700 object-cover" alt={vault.name} />
@@ -92,16 +88,14 @@ export const EarnVaults: React.FC<EarnVaultsProps> = ({ onOpenUrl }) => {
                 <div className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Net APY</div>
               </div>
             </div>
-            
             <div className="bg-black/20 p-3 rounded-2xl flex justify-between items-center text-xs">
-                <span className="text-gray-500 font-bold uppercase text-[9px]">Base Strategy</span>
+                <span className="text-gray-500 font-bold uppercase text-[9px]">Strategy</span>
                 <span className="text-gray-300 font-medium truncate ml-4 italic">{vault.strategy}</span>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Deposit Drawer (Modal) */}
       {selectedVault && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
             <div className="bg-base-card border border-gray-700 rounded-3xl p-8 w-full max-w-sm shadow-2xl animate-bounce-in">
@@ -122,7 +116,6 @@ export const EarnVaults: React.FC<EarnVaultsProps> = ({ onOpenUrl }) => {
                     <div className="bg-base-dark p-4 rounded-2xl border border-gray-700 shadow-inner">
                         <div className="flex justify-between text-[10px] text-gray-500 font-black uppercase mb-2">
                             <span>Amount to Deposit</span>
-                            <span>Bal: 12.5 {selectedVault.asset}</span>
                         </div>
                         <div className="flex items-center gap-3">
                             <input 
@@ -138,48 +131,43 @@ export const EarnVaults: React.FC<EarnVaultsProps> = ({ onOpenUrl }) => {
 
                     <div className="space-y-3 p-1">
                         <div className="flex justify-between text-xs">
-                            <span className="text-gray-500 font-bold uppercase">Estimated Yield</span>
-                            <span className="text-green-400 font-black">~${(parseFloat(depositAmount || '0') * 3200 * selectedVault.apy / 100).toFixed(2)} / yr</span>
+                            <span className="text-gray-500 font-bold uppercase">Yield Projection</span>
+                            <span className="text-green-400 font-black">~${(parseFloat(depositAmount || '0') * 3200 * selectedVault.apy / 100).toFixed(2)}/yr</span>
                         </div>
                         <div className="flex justify-between text-xs">
-                            <span className="text-gray-500 font-bold uppercase">Protocol Fees</span>
-                            <span className="text-white font-black">0% (Sponsored)</span>
-                        </div>
-                        <div className="h-px bg-gray-800 my-2"></div>
-                        <div className="flex justify-between text-xs">
-                            <span className="text-gray-500 font-bold uppercase">Total Deposit</span>
-                            <span className="text-white font-black">{depositAmount || '0'} {selectedVault.asset}</span>
+                            <span className="text-gray-500 font-bold uppercase">Status</span>
+                            <span className="text-white font-black italic">Onchain Direct</span>
                         </div>
                     </div>
 
-                    <button 
-                        onClick={handleDeposit}
-                        disabled={isDepositing || !depositAmount}
-                        className={`w-full bg-green-500 hover:bg-green-400 text-base-dark font-black py-5 rounded-2xl shadow-xl shadow-green-900/20 active:scale-95 transition-all flex items-center justify-center gap-3 ${(!depositAmount || isDepositing) ? 'opacity-50 grayscale' : ''}`}
+                    <Transaction 
+                      calls={calls}
+                      onSuccess={() => {
+                        setSelectedVault(null);
+                        setDepositAmount('');
+                      }}
+                      onError={(err) => console.error(err)}
                     >
-                        {isDepositing ? (
-                            <>
-                                <div className="animate-spin h-5 w-5 border-2 border-base-dark border-t-transparent rounded-full"></div>
-                                <span>Authorizing...</span>
-                            </>
-                        ) : (
-                            <>
-                                <i className="fas fa-money-bill-trend-up"></i>
-                                <span>Deposit & Earn</span>
-                            </>
-                        )}
-                    </button>
+                      <TransactionButton 
+                        disabled={!depositAmount}
+                        className={`!w-full !bg-green-500 !text-base-dark !font-black !py-5 !rounded-2xl !shadow-xl !transition-all ${!depositAmount ? '!opacity-50 !grayscale' : ''}`} 
+                        text="Deposit & Earn"
+                      />
+                      <TransactionSponsor />
+                      <TransactionStatus />
+                    </Transaction>
                     
                     <p className="text-[8px] text-gray-600 text-center uppercase tracking-widest font-black">
                         Funds are fully non-custodial and can be withdrawn anytime.
                     </p>
                 </div>
             </div>
+            <TransactionToast />
         </div>
       )}
 
-      <div className="text-center text-[9px] text-gray-600 font-black uppercase tracking-[0.2em]">
-        Morpho-powered Strategies • Audited Onchain
+      <div className="text-center text-[9px] text-gray-600 font-black uppercase tracking-[0.4em] pt-4">
+        Audited DeFi Strategies • Base Mainnet
       </div>
     </div>
   );

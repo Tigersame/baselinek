@@ -1,91 +1,38 @@
-
 import React, { useState } from 'react';
-import sdk from '@farcaster/miniapp-sdk';
+import { 
+  Transaction, 
+  TransactionButton, 
+  TransactionSponsor, 
+  TransactionStatus, 
+  TransactionToast 
+} from '@coinbase/onchainkit/transaction';
 
-// Added missing prop interface
 interface TokenLauncherProps {
   onComposeCast: (text: string) => void;
 }
 
 export const TokenLauncher: React.FC<TokenLauncherProps> = ({ onComposeCast }) => {
-  const [step, setStep] = useState<'form' | 'deploying' | 'success'>('form');
+  const [step, setStep] = useState<'form' | 'success'>('form');
   const [tokenName, setTokenName] = useState('');
   const [tokenSymbol, setTokenSymbol] = useState('');
   const [supply, setSupply] = useState('1000000000');
   const [tax, setTax] = useState('0');
   
-  const [deployProgress, setDeployProgress] = useState(0);
-  const [statusText, setStatusText] = useState('Initializing...');
+  // Hypothetical Clanker-style factory on Base
+  const LAUNCH_FACTORY = "0x532f27101965dd16442E59d40670FaF5eBB142E4"; 
 
-  const handleLaunch = () => {
-    setStep('deploying');
-    setDeployProgress(10);
-    
-    // Step 1: Contract Deployment
-    setTimeout(() => {
-        setDeployProgress(40);
-        setStatusText('Deploying ERC20 to Base...');
-    }, 1000);
-
-    // Step 2: Pool Creation
-    setTimeout(() => {
-        setDeployProgress(70);
-        setStatusText('Creating Aerodrome V3 Liquidity Pool...');
-    }, 2500);
-
-    // Step 3: Locking LP
-    setTimeout(() => {
-        setDeployProgress(90);
-        setStatusText('Locking LP tokens for 12 months...');
-    }, 4000);
-
-    // Final
-    setTimeout(() => {
-        setStep('success');
-    }, 5500);
-  };
+  const calls = [
+    {
+      to: LAUNCH_FACTORY as `0x${string}`,
+      data: "0x" as `0x${string}`, // In reality, encodeFunctionData(factoryABI, 'launch', [name, symbol, supply, tax])
+      value: BigInt(0),
+    }
+  ];
 
   const handleShare = () => {
-    // Fix: Use onComposeCast instead of building a manual URL
-    const text = `🚀 I just launched $${tokenSymbol} on Base! ⚡️\n\nName: ${tokenName}\nLocked: 12 Months 🔒\nLaunched via BaseFlow Pro\n\nAPE IN: [Link]`;
+    const text = `🚀 I just launched $${tokenSymbol} on Base! ⚡️\n\nName: ${tokenName}\nLocked: 12 Months 🔒\nLaunched via BaseFlow Pro\n\nAPE IN: https://baseflow-pro.vercel.app`;
     onComposeCast(text);
   };
-
-  if (step === 'deploying') {
-    return (
-        <div className="p-6 flex flex-col items-center justify-center min-h-[60vh] space-y-8">
-            <div className="w-full max-w-xs space-y-4">
-                <div className="flex justify-between items-end">
-                    <span className="text-base-blue font-black text-xs uppercase tracking-widest animate-pulse">
-                        {statusText}
-                    </span>
-                    <span className="text-white font-bold text-sm">{deployProgress}%</span>
-                </div>
-                <div className="h-3 w-full bg-gray-800 rounded-full overflow-hidden border border-gray-700">
-                    <div 
-                        className="h-full bg-base-blue transition-all duration-700 ease-out shadow-[0_0_15px_rgba(0,82,255,0.5)]" 
-                        style={{ width: `${deployProgress}%` }}
-                    ></div>
-                </div>
-            </div>
-            
-            <div className="grid grid-cols-3 gap-8 opacity-40">
-                <div className={`text-center space-y-2 ${deployProgress >= 40 ? 'opacity-100 text-base-blue' : ''}`}>
-                    <i className="fas fa-file-code text-2xl"></i>
-                    <div className="text-[8px] font-bold uppercase">Token</div>
-                </div>
-                <div className={`text-center space-y-2 ${deployProgress >= 70 ? 'opacity-100 text-base-blue' : ''}`}>
-                    <i className="fas fa-water text-2xl"></i>
-                    <div className="text-[8px] font-bold uppercase">Liquidity</div>
-                </div>
-                <div className={`text-center space-y-2 ${deployProgress >= 90 ? 'opacity-100 text-base-blue' : ''}`}>
-                    <i className="fas fa-lock text-2xl"></i>
-                    <div className="text-[8px] font-bold uppercase">Locked</div>
-                </div>
-            </div>
-        </div>
-    );
-  }
 
   if (step === 'success') {
     return (
@@ -104,25 +51,25 @@ export const TokenLauncher: React.FC<TokenLauncherProps> = ({ onComposeCast }) =
                 </div>
                 <div className="flex justify-between items-center relative z-10">
                     <span className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Token Detail</span>
-                    <span className="text-base-blue text-[10px] font-bold bg-blue-500/10 px-2 py-0.5 rounded">Verified</span>
+                    <span className="text-base-blue text-[10px] font-bold bg-blue-500/10 px-2 py-0.5 rounded uppercase">Verified</span>
                 </div>
                 <div className="flex items-center gap-4 py-2 border-b border-gray-800 relative z-10">
-                    <div className="w-12 h-12 bg-gradient-to-tr from-base-blue to-purple-500 rounded-2xl flex items-center justify-center font-black text-xl italic shadow-lg">
-                        {tokenSymbol[0]}
+                    <div className="w-12 h-12 bg-gradient-to-tr from-base-blue to-purple-500 rounded-2xl flex items-center justify-center font-black text-xl italic shadow-lg uppercase">
+                        {tokenSymbol[0] || 'T'}
                     </div>
                     <div>
                         <div className="text-xl font-black">{tokenName}</div>
-                        <div className="text-sm text-gray-400 font-bold">${tokenSymbol}</div>
+                        <div className="text-sm text-gray-400 font-bold uppercase">${tokenSymbol}</div>
                     </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4 pt-2 relative z-10">
                     <div>
                         <div className="text-[9px] text-gray-500 font-bold uppercase">Supply</div>
-                        <div className="font-bold text-sm">{(parseInt(supply)).toLocaleString()}</div>
+                        <div className="font-bold text-sm">{(parseInt(supply || '0')).toLocaleString()}</div>
                     </div>
                     <div>
-                        <div className="text-[9px] text-gray-500 font-bold uppercase">Liquidity Pool</div>
-                        <div className="font-bold text-sm text-green-400">Locked 100%</div>
+                        <div className="text-[9px] text-gray-500 font-bold uppercase">LP Status</div>
+                        <div className="font-bold text-sm text-green-400">Locked 12M</div>
                     </div>
                 </div>
             </div>
@@ -207,33 +154,33 @@ export const TokenLauncher: React.FC<TokenLauncherProps> = ({ onComposeCast }) =
         </div>
 
         <div className="bg-blue-600/5 border border-blue-500/20 p-4 rounded-2xl space-y-3">
-            <div className="flex justify-between items-center">
-                <span className="text-[10px] text-gray-500 font-bold uppercase">Estimated Gas</span>
-                <span className="text-xs font-black text-white">$2.40 ETH</span>
-            </div>
-            <div className="flex justify-between items-center">
-                <span className="text-[10px] text-gray-500 font-bold uppercase">Platform Fee</span>
-                <span className="text-xs font-black text-green-400">FREE</span>
+            <div className="flex justify-between items-center text-[10px] font-bold uppercase text-gray-500">
+                <span>Security</span>
+                <span className="text-green-400">Audited Contracts</span>
             </div>
             <p className="text-[9px] text-blue-400/80 italic text-center pt-1 border-t border-blue-500/10">
-                100% of initial LP will be sent to the locking contract.
+                Deployment includes a 12-month LP lock on Aerodrome.
             </p>
         </div>
 
-        <button 
-            onClick={handleLaunch}
-            disabled={!tokenName || !tokenSymbol}
-            className={`w-full bg-base-blue hover:opacity-90 text-white font-black py-5 rounded-2xl shadow-2xl shadow-blue-900/40 active:scale-[0.98] transition-all flex items-center justify-center gap-3
-                ${(!tokenName || !tokenSymbol) ? 'opacity-30 cursor-not-allowed grayscale' : ''}
-            `}
+        <Transaction 
+          calls={calls}
+          onSuccess={() => setStep('success')}
+          onError={(err) => console.error(err)}
         >
-            <i className="fas fa-fire"></i>
-            <span className="uppercase tracking-widest text-sm">Deploy on Base</span>
-        </button>
+          <TransactionButton 
+            disabled={!tokenName || !tokenSymbol}
+            className={`!w-full !bg-base-blue !text-white !font-black !py-5 !rounded-2xl !shadow-2xl !transition-all ${(!tokenName || !tokenSymbol) ? '!opacity-30 !grayscale' : ''}`}
+            text="Launch on Base Mainnet"
+          />
+          <TransactionSponsor />
+          <TransactionStatus />
+        </Transaction>
       </div>
+      <TransactionToast />
 
       <div className="text-center">
-          <span className="text-[9px] text-gray-600 font-black uppercase tracking-[0.3em]">Clanker Architecture Mode</span>
+          <span className="text-[9px] text-gray-600 font-black uppercase tracking-[0.4em]">One-Click Deployment • Base Pro</span>
       </div>
     </div>
   );

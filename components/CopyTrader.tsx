@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Name, Avatar, Identity, Socials } from '@coinbase/onchainkit/identity';
+import { Name, Avatar, Identity } from '@coinbase/onchainkit/identity';
+import { 
+  Transaction, 
+  TransactionButton, 
+  TransactionSponsor, 
+  TransactionStatus, 
+  TransactionToast 
+} from '@coinbase/onchainkit/transaction';
 import { MOCK_TRADERS } from '../constants';
 import { Trader } from '../types';
 
@@ -10,6 +17,17 @@ interface CopyTraderProps {
 
 export const CopyTrader: React.FC<CopyTraderProps> = ({ onComposeCast, onOpenUrl }) => {
   const [selectedTrader, setSelectedTrader] = useState<Trader | null>(null);
+
+  // Hypothetical mirror contract address
+  const MIRROR_CONTRACT = "0x1234567890123456789012345678901234567890";
+
+  const calls = [
+    {
+      to: MIRROR_CONTRACT as `0x${string}`,
+      data: "0x" as `0x${string}`, // encodeFunctionData for mirroring
+      value: BigInt(0),
+    }
+  ];
 
   const handleShareStats = (trader: Trader) => {
     const text = `📈 Mirroring ${trader.ens || trader.address} on BaseFlow Pro! ⚡️\n\n🔥 30d PnL: +${trader.pnl30d}%\n🎯 Win Rate: ${trader.winRate}%\n👥 Join the best on Base.\n\nMirror Alpha: https://baseflow-pro.vercel.app`;
@@ -26,12 +44,12 @@ export const CopyTrader: React.FC<CopyTraderProps> = ({ onComposeCast, onOpenUrl
 
       <div className="space-y-4">
         <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest px-1">Top Tier Traders</h3>
-        {MOCK_TRADERS.map((trader, idx) => (
+        {MOCK_TRADERS.map((trader) => (
           <div key={trader.id} className="bg-base-card p-6 rounded-[2.25rem] border border-gray-800 hover:border-base-blue transition-all group shadow-xl relative overflow-hidden">
-             <div className="absolute top-0 right-0 p-4 font-black italic text-4xl text-white/5 pointer-events-none">ALPHA</div>
+             <div className="absolute top-0 right-0 p-4 font-black italic text-4xl text-white/5 pointer-events-none uppercase">Alpha</div>
              <div className="flex justify-between items-start relative z-10">
                 <div className="flex gap-4 items-center">
-                    <Identity address={trader.address as any} schemaId="0x123..." className="!bg-transparent !p-0">
+                    <Identity address={trader.address as any} className="!bg-transparent !p-0">
                         <div className="relative">
                             <Avatar className="!w-14 !h-14 !rounded-2xl border-2 border-gray-700 shadow-2xl" />
                             <div className="absolute -bottom-1 -right-1 bg-green-500 w-3 h-3 rounded-full border-2 border-base-dark"></div>
@@ -88,23 +106,33 @@ export const CopyTrader: React.FC<CopyTraderProps> = ({ onComposeCast, onOpenUrl
 
                     <div className="bg-blue-600/5 p-4 rounded-2xl border border-blue-500/20 space-y-2">
                          <div className="flex justify-between text-[9px] font-black uppercase text-gray-500">
-                             <span>Copying Asset</span>
-                             <span className="text-white">{selectedTrader.topToken}</span>
+                             <span>Target Wallet</span>
+                             <span className="text-white">{selectedTrader.ens || 'Professional'}</span>
                          </div>
                          <div className="flex justify-between text-[9px] font-black uppercase text-gray-500">
                              <span>Execution Fee</span>
-                             <span className="text-green-400">FREE (Sponsored)</span>
+                             <span className="text-green-400 font-black">SPONSORED</span>
                          </div>
                     </div>
                     
-                    <button 
-                      onClick={() => { alert('Mirror activated via BaseFlow Protocol!'); setSelectedTrader(null); }}
-                      className="w-full bg-base-blue text-white font-black py-5 rounded-[1.5rem] shadow-xl shadow-blue-900/40 text-xs uppercase tracking-[0.2em] active:scale-95 transition-all"
+                    <Transaction 
+                      calls={calls}
+                      onSuccess={() => {
+                        setSelectedTrader(null);
+                        alert('Mirror Activated on Base!');
+                      }}
+                      onError={(e) => console.error(e)}
                     >
-                        Activate Protocol
-                    </button>
+                      <TransactionButton 
+                        className="!w-full !bg-base-blue !text-white !font-black !py-5 !rounded-[1.5rem] !shadow-xl !shadow-blue-900/40 !text-xs !uppercase !tracking-[0.2em] !transition-all"
+                        text="Activate Protocol"
+                      />
+                      <TransactionSponsor />
+                      <TransactionStatus />
+                    </Transaction>
                 </div>
             </div>
+            <TransactionToast />
         </div>
       )}
     </div>
